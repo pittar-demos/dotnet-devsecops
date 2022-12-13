@@ -2,4 +2,5 @@ namespace: cicd
 
 resources:
   - contoso-imagestream.yaml
+  - pipeline-workspace-pvc.yaml
   - build-and-rollout-pipeline.yaml
