@@ -1,3 +1,4 @@
 resources:
   - contoso-test-namespace-policy.yaml
+  - contoso-test-gitops-policy.yaml
 

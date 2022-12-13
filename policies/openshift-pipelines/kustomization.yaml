@@ -1,4 +1,5 @@
 namespace: custom-policies
 
-bases:
-  - policy
+resources:
+  - openshift-pipelines-operator-policy.yaml
+  - chains-supply-chain-security-policy.yaml

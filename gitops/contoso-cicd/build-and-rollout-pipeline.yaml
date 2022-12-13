@@ -73,6 +73,72 @@ spec:
       workspaces:
         - name: acs-central
           workspace: acs-central
+    - name: skopeo-tag-dev
+      params:
+        - name: srcImageURL
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/cicd/contoso@$(tasks.s2i-dotnet.results.IMAGE_DIGEST)
+        - name: destImageURL
+          value: 'image-registry.openshift-image-registry.svc:5000/cicd/contoso:dev'
+        - name: srcTLSverify
+          value: 'true'
+        - name: destTLSverify
+          value: 'true'
+      runAfter:
+        - acs-image-check
+      taskRef:
+        kind: ClusterTask
+        name: skopeo-copy
+      workspaces:
+        - name: images-url
+          workspace: workspace
+    - name: rollout-dev
+      params:
+        - name: SCRIPT
+          value: oc rollout restart deploy contoso -n contoso-dev
+        - name: VERSION
+          value: latest
+      runAfter:
+        - skopeo-tag-dev
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+      workspaces:
+        - name: manifest-dir
+          workspace: workspace
+    - name: skopeo-tag-test
+      params:
+        - name: srcImageURL
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/cicd/contoso@$(tasks.s2i-dotnet.results.IMAGE_DIGEST)
+        - name: destImageURL
+          value: 'image-registry.openshift-image-registry.svc:5000/cicd/contoso:test'
+        - name: srcTLSverify
+          value: 'true'
+        - name: destTLSverify
+          value: 'true'
+      runAfter:
+        - rollout-dev
+      taskRef:
+        kind: ClusterTask
+        name: skopeo-copy
+      workspaces:
+        - name: images-url
+          workspace: workspace
+    - name: rollout-test
+      params:
+        - name: SCRIPT
+          value: oc rollout restart deploy contoso -n contoso-test
+        - name: VERSION
+          value: latest
+      runAfter:
+        - skopeo-tag-test
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+      workspaces:
+        - name: manifest-dir
+          workspace: workspace
   workspaces:
     - name: workspace
     - name: acs-central

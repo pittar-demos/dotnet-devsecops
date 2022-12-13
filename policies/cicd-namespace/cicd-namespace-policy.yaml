@@ -45,6 +45,7 @@ spec:
                 kind: RoleBinding
                 metadata:
                   name: contoso-cicd-image-puller
+                  namespace: cicd
                 roleRef:
                   apiGroup: rbac.authorization.k8s.io
                   kind: ClusterRole
