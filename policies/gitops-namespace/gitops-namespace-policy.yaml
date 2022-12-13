@@ -1,0 +1,130 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: gitops-namespace
+  annotations:
+    policy.open-cluster-management.io/standards: DevOps
+    policy.open-cluster-management.io/categories: CI/CD Tools
+    policy.open-cluster-management.io/controls: Namespace Config
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: gitops-namespace
+        spec:
+          remediationAction: inform
+          severity: high
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1                    
+                kind: Namespace
+                metadata:
+                  annotations:
+                    openshift.io/description: Developer Argo CD instance.
+                    openshift.io/display-name: Developer GitOps
+                  name: developer-gitops
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: gitops-argocd-instance
+        spec:
+          remediationAction: inform
+          severity: high
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: argoproj.io/v1alpha1
+                kind: ArgoCD
+                metadata:
+                  annotations:
+                    argocd.argoproj.io/sync-options: Prune=false
+                    argocd.argoproj.io/compare-options: IgnoreExtraneous
+                  name: argocd
+                  namespace: developer-gitops
+                spec:
+                  applicationInstanceLabelKey: argocd.argoproj.io/instance
+                  server:
+                    insecure: true
+                    route:
+                      enabled: true
+                      tls:
+                        termination: edge
+                        insecureEdgeTerminationPolicy: Redirect
+                  sso:
+                    dex:
+                      openShiftOAuth: true
+                    provider: dex
+                  resourceCustomizations: |
+                    PersistentVolumeClaim:
+                      health.lua: |
+                        hs = {}
+                        if obj.status ~= nil then
+                          if obj.status.phase ~= nil then
+                            if obj.status.phase == "Pending" then
+                              hs.status = "Healthy"
+                              hs.message = obj.status.phase
+                              return hs
+                            end
+                            if obj.status.phase == "Bound" then
+                              hs.status = "Healthy"
+                              hs.message = obj.status.phase
+                              return hs
+                            end
+                          end
+                        end
+                        hs.status = "Progressing"
+                        hs.message = "Waiting for PVC to provision"
+                        return hs
+                  resourceExclusions: |
+                    - apiGroups:
+                      - tekton.dev
+                      clusters:
+                      - '*'
+                      kinds:
+                      - TaskRun
+                      - PipelineRun
+                    - apiGroups:
+                      - compliance.openshift.io
+                      kinds:
+                      - ComplianceCheckResult
+                      - ComplianceRemediation
+                  rbac:
+                    defaultPolicy: role:admin
+                    policy: |
+                      g, openshift-gitops-admins, role:admin
+                    scopes: "[groups]"
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-gitops-namespace
+placementRef:
+  name: placement-gitops-namespace
+  kind: PlacementRule
+  apiGroup: apps.open-cluster-management.io
+subjects:
+  - name: gitops-namespace
+    kind: Policy
+    apiGroup: policy.open-cluster-management.io
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: placement-gitops-namespace
+spec:
+  clusterConditions:
+    - status: 'True'
+      type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+      - key: devsecops
+        operator: In
+        values:
+          - "true"
+

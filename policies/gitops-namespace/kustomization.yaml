@@ -1,0 +1,7 @@
+namespace: custom-policies
+
+resources:
+  - gitops-namespace-policy.yaml
+
+# bases:
+#   - policy

@@ -1,0 +1,4 @@
+namespace: custom-policies
+
+resources:
+  - acs-cicd-token-secret-policy.yaml

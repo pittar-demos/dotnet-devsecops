@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: contoso
+    app.kubernetes.io/component: contoso
+    app.kubernetes.io/instance: contoso
+    app.kubernetes.io/part-of: contoso
+  name: contoso
+spec:
+  ports:
+  - name: 8080-tcp
+    port: 8080
+  selector:
+    app: contoso
+    deploymentconfig: contoso

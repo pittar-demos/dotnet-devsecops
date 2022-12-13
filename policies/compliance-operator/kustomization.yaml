@@ -1,0 +1,5 @@
+namespace: custom-policies
+
+bases:
+  - operator-policy
+  - scan-nist-800-53-policy

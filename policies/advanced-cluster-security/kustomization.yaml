@@ -1,0 +1,4 @@
+bases:
+  - acs-central-policy
+  - acs-securedcluster-policy
+  - acs-cicd-secret-policy

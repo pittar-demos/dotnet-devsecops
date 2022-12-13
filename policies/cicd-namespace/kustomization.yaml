@@ -1,0 +1,7 @@
+namespace: custom-policies
+
+resources:
+  - cicd-namespace-policy.yaml
+
+# bases:
+#   - policy

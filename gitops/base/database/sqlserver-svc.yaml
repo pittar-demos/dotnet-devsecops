@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: sqlserver
+    app.kubernetes.io/component: sqlserver
+    app.kubernetes.io/instance: sqlserver
+    app.kubernetes.io/part-of: contoso-app
+    app.openshift.io/runtime-version: 2019-latest
+  name: sqlserver
+  namespace: sqlserver
+spec:
+  ports:
+  - name: 1433-tcp
+    port: 1433
+  selector:
+    app: sqlserver
+    deploymentconfig: sqlserver

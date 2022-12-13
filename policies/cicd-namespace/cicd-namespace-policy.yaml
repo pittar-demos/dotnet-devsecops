@@ -1,0 +1,83 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: cicd-namespace
+  annotations:
+    policy.open-cluster-management.io/standards: DevOps
+    policy.open-cluster-management.io/categories: CI/CD Tools
+    policy.open-cluster-management.io/controls: Namespace Config
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: cicd-namespace
+        spec:
+          remediationAction: inform
+          severity: high
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1                    
+                kind: Namespace
+                metadata:
+                  annotations:
+                    openshift.io/description: Contoso CI/CD
+                    openshift.io/display-name: Contoso CI/CD
+                  labels:
+                    argocd.argoproj.io/managed-by: developer-gitops
+                  name: cicd
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: cicd-roxctl-secret
+        spec:
+          remediationAction: inform
+          severity: high
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                kind: Secret
+                apiVersion: v1
+                metadata:
+                  name: roxsecrets
+                  namespace: cicd
+                type: Opaque
+                data:
+                  rox_api_token: |
+                    {{ fromSecret "stackrox" "roxsecrets" "rox_api_token" }}
+                  rox_central_endpoint: |
+                    {{ fromSecret "stackrox" "roxsecrets" "rox_central_endpoint" }}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-cicd-namespace
+placementRef:
+  name: placement-cicd-namespace
+  kind: PlacementRule
+  apiGroup: apps.open-cluster-management.io
+subjects:
+  - name: cicd-namespace
+    kind: Policy
+    apiGroup: policy.open-cluster-management.io
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: placement-cicd-namespace
+spec:
+  clusterConditions:
+    - status: 'True'
+      type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+      - key: devsecops
+        operator: In
+        values:
+          - "true"
+

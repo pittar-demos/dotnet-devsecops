@@ -1,0 +1,10 @@
+bases:
+  - custom-policies-namespace
+  - advanced-cluster-security
+  - compliance-operator
+  - openshift-gitops
+  - openshift-pipelines
+  - restricted-scc
+  - cicd-namespace
+  - gitops-namespace
+  - contoso-namespaces

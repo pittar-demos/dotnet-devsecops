@@ -1,0 +1,64 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: restricted-scc
+  annotations:
+    policy.open-cluster-management.io/standards: DevOps
+    policy.open-cluster-management.io/categories: CI/CD Tools
+    policy.open-cluster-management.io/controls: Namespace Config
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: restricted-scc
+        spec:
+          remediationAction: inform
+          severity: high
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: ClusterRoleBinding
+                metadata:
+                  name: system:openshift:scc:restricted
+                roleRef:
+                  apiGroup: rbac.authorization.k8s.io
+                  kind: ClusterRole
+                  name: system:openshift:scc:restricted
+                subjects:
+                - apiGroup: rbac.authorization.k8s.io
+                  kind: Group
+                  name: system:authenticated
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-restricted-scc
+placementRef:
+  name: placement-restricted-scc
+  kind: PlacementRule
+  apiGroup: apps.open-cluster-management.io
+subjects:
+  - name: restricted-scc
+    kind: Policy
+    apiGroup: policy.open-cluster-management.io
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: placement-restricted-scc
+spec:
+  clusterConditions:
+    - status: 'True'
+      type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+      - key: devsecops
+        operator: In
+        values:
+          - "true"
+

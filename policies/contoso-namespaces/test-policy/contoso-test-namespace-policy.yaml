@@ -1,0 +1,61 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: contoso-test-namespace
+  annotations:
+    policy.open-cluster-management.io/standards: DevOps
+    policy.open-cluster-management.io/categories: CI/CD Tools
+    policy.open-cluster-management.io/controls: Namespace Config
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: contoso-test-namespace
+        spec:
+          remediationAction: inform
+          severity: high
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1                    
+                kind: Namespace
+                metadata:
+                  annotations:
+                    openshift.io/description: Contoso TEST
+                    openshift.io/display-name: Contoso TEST
+                  labels:
+                    argocd.argoproj.io/managed-by: developer-gitops
+                  name: contoso-test
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-contoso-test-namespace
+placementRef:
+  name: placement-contoso-test-namespace
+  kind: PlacementRule
+  apiGroup: apps.open-cluster-management.io
+subjects:
+  - name: contoso-test-namespace
+    kind: Policy
+    apiGroup: policy.open-cluster-management.io
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: placement-contoso-test-namespace
+spec:
+  clusterConditions:
+    - status: 'True'
+      type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+      - key: devsecops
+        operator: In
+        values:
+          - "true"
+

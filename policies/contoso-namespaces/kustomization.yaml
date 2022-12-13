@@ -1,0 +1,5 @@
+namespace: custom-policies
+
+bases:
+  - dev-policy
+  - test-policy

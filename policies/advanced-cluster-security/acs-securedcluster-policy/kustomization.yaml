@@ -1,0 +1,5 @@
+namespace: stackrox
+
+resources:
+  - namespace.yaml
+  - acs-securedcluster-policy.yaml

@@ -1,0 +1,4 @@
+namespace: custom-policies
+
+bases:
+  - policy
