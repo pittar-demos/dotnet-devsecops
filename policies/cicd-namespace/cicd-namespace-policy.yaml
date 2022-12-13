@@ -70,11 +70,11 @@ spec:
                     argocd.argoproj.io/sync-wave: "1"
                   labels:
                     gitops.ownedBy: developer-gitops
-                  name: contoso-dev
+                  name: contoso-cicd
                   namespace: developer-gitops
                 spec:
                   destination:
-                    namespace: contoso-dev
+                    namespace: cicd
                     server: https://kubernetes.default.svc
                   project: default
                   source:
