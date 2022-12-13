@@ -3,8 +3,8 @@ kind: Policy
 metadata:
   name: contoso-test-namespace
   annotations:
-    policy.open-cluster-management.io/standards: DevOps
-    policy.open-cluster-management.io/categories: CI/CD Tools
+    policy.open-cluster-management.io/standards: Configuration
+    policy.open-cluster-management.io/categories: Applications
     policy.open-cluster-management.io/controls: Namespace Config
 spec:
   remediationAction: enforce
