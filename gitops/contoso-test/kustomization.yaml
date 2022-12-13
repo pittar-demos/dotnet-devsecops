@@ -5,10 +5,7 @@ bases:
   - ../base/app
   - ../base/database
 
-resources:
-  - namespace.yaml
-
 images:
   - name: contoso
-    newName: quay.io/pittar/contoso
-    newTag: test
+    newName: image-registry.openshift-image-registry.svc:5000/cicd/contoso
+    newTag: latest

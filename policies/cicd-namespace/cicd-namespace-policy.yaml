@@ -34,6 +34,32 @@ spec:
         apiVersion: policy.open-cluster-management.io/v1
         kind: ConfigurationPolicy
         metadata:
+          name: image-puller-rbac
+        spec:
+          remediationAction: inform
+          severity: high
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: RoleBinding
+                metadata:
+                  name: contoso-cicd-image-puller
+                roleRef:
+                  apiGroup: rbac.authorization.k8s.io
+                  kind: ClusterRole
+                  name: system:image-puller
+                subjects:
+                  - kind: ServiceAccount
+                    name: default
+                    namespace: contoso-dev
+                  - kind: ServiceAccount
+                    name: default
+                    namespace: contoso-test
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
           name: cicd-roxctl-secret
         spec:
           remediationAction: inform
