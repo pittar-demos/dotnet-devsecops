@@ -1,7 +1,7 @@
 namespace: contoso-dev
 
 bases:
-  #- ../base/rbac/contoso-cicd-pipelines
+  - ../base/rbac/contoso-cicd-pipelines
   #- ../base/app
   - ../base/database
 

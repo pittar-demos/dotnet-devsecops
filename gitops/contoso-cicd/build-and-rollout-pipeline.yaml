@@ -1,0 +1,78 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-and-rollout
+spec:
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: 'https://github.com/pittar-demos/ContosoUniversity.git'
+        - name: revision
+          value: main
+        - name: submodules
+          value: 'true'
+        - name: depth
+          value: '1'
+        - name: sslVerify
+          value: 'true'
+        - name: deleteExisting
+          value: 'true'
+        - name: userHome
+          value: /tekton/home
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: workspace
+    - name: s2i-dotnet
+      params:
+        - name: PATH_CONTEXT
+          value: .
+        - name: TLSVERIFY
+          value: 'true'
+        - name: IMAGE
+          value: 'image-registry.openshift-image-registry.svc:5000/cicd/contoso:latest'
+        - name: SKIP_PUSH
+          value: 'false'
+        - name: ENV_VARS
+          value:
+            - DOTNET_STARTUP_PROJECT=ContosoUniversity/ContosoUniversity.csproj
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: ClusterTask
+        name: s2i-dotnet
+      workspaces:
+        - name: source
+          workspace: workspace
+    - name: acs-image-scan
+      params:
+        - name: image
+          value: 'image-registry.openshift-image-registry.svc:5000/cicd/contoso:latest'
+        - name: output_format
+          value: json
+      runAfter:
+        - s2i-dotnet
+      taskRef:
+        kind: ClusterTask
+        name: acs-image-scan
+      workspaces:
+        - name: acs-central
+          workspace: acs-central
+    - name: acs-image-check
+      params:
+        - name: image
+          value: 'image-registry.openshift-image-registry.svc:5000/cicd/contoso:latest'
+      runAfter:
+        - acs-image-scan
+      taskRef:
+        kind: ClusterTask
+        name: acs-image-check
+      workspaces:
+        - name: acs-central
+          workspace: acs-central
+  workspaces:
+    - name: workspace
+    - name: acs-central

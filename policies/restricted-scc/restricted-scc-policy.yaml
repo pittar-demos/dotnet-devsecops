@@ -22,17 +22,33 @@ spec:
             - complianceType: musthave
               objectDefinition:
                 apiVersion: rbac.authorization.k8s.io/v1
-                kind: ClusterRoleBinding
+                kind: RoleBinding
                 metadata:
-                  name: system:openshift:scc:restricted
+                  name: mysql-anyuid-scc
+                  namespace: contoso-dev
                 roleRef:
                   apiGroup: rbac.authorization.k8s.io
                   kind: ClusterRole
-                  name: system:openshift:scc:restricted
+                  name: system:openshift:scc:anyuid
                 subjects:
-                - apiGroup: rbac.authorization.k8s.io
-                  kind: Group
-                  name: system:authenticated
+                - kind: ServiceAccount
+                  name: default
+                  namespace: contoso-dev
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: RoleBinding
+                metadata:
+                  name: mysql-anyuid-scc
+                  namespace: contoso-test
+                roleRef:
+                  apiGroup: rbac.authorization.k8s.io
+                  kind: ClusterRole
+                  name: system:openshift:scc:anyuid
+                subjects:
+                - kind: ServiceAccount
+                  name: default
+                  namespace: contoso-test
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding

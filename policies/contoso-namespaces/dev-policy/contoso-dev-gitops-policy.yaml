@@ -29,6 +29,7 @@ spec:
                   labels:
                     gitops.ownedBy: developer-gitops
                   name: contoso-dev
+                  namespace: developer-gitops
                 spec:
                   destination:
                     namespace: contoso-dev

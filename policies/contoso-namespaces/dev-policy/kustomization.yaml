@@ -1,3 +1,4 @@
 resources:
   - contoso-dev-namespace-policy.yaml
+  - contoso-dev-gitops-policy.yaml
 

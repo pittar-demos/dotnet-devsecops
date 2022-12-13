@@ -216,6 +216,64 @@ spec:
                     serviceAccount: create-cluster-init
                     serviceAccountName: create-cluster-init
                     terminationGracePeriodSeconds: 30
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: acs-central-registry-fix
+      spec:
+        remediationAction: inform
+        severity: high
+        object-templates:
+          - complianceType: musthave
+            objectDefinition:
+              apiVersion: v1
+              kind: ServiceAccount
+              metadata:
+                annotations:
+                  argocd.argoproj.io/sync-wave: "1"
+                name: stackrox-image-integration-update-job
+                namespace: stackrox
+          - complianceType: musthave
+            objectDefinition:
+              apiVersion: rbac.authorization.k8s.io/v1
+              kind: RoleBinding
+              metadata:
+                name: stackrox-image-integration-update
+                namespace: stackrox
+              roleRef:
+                apiGroup: rbac.authorization.k8s.io
+                kind: ClusterRole
+                name: admin
+              subjects:
+                - kind: ServiceAccount
+                  name: stackrox-image-integration-update-job
+                  namespace: stackrox
+          - complianceType: musthave
+            objectDefinition:
+              apiVersion: v1
+              kind: ServiceAccount
+              metadata:
+                annotations:
+                  argocd.argoproj.io/sync-wave: "1"
+                name: stackrox-image-puller
+                namespace: stackrox
+          - complianceType: musthave
+            objectDefinition:
+              kind: ClusterRoleBinding
+              apiVersion: rbac.authorization.k8s.io/v1
+              metadata:
+                annotations:
+                  argocd.argoproj.io/sync-wave: "1"
+                name: stackrox-image-puller-clusterrolebinding
+              roleRef:
+                apiGroup: rbac.authorization.k8s.io
+                kind: ClusterRole
+                name: system:image-puller
+              subjects:
+                - kind: ServiceAccount
+                  name: stackrox-image-puller
+                  namespace: stackrox
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
