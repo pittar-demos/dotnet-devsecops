@@ -57,33 +57,6 @@ spec:
                 spec:
                   targetNamespaces:
                     - openshift-compliance
-    - objectDefinition:
-        apiVersion: policy.open-cluster-management.io/v1
-        kind: ConfigurationPolicy
-        metadata:
-          name: policy-compliance-cis-scan
-        spec:
-          remediationAction: inform
-          severity: high
-          object-templates:
-            - complianceType: musthave
-              objectDefinition:
-                apiVersion: compliance.openshift.io/v1alpha1
-                kind: ScanSettingBinding
-                metadata:
-                  name: cis-compliance
-                  namespace: openshift-compliance
-                profiles:
-                  - name: ocp4-cis-node
-                    kind: Profile
-                    apiGroup: compliance.openshift.io/v1alpha1
-                  - name: ocp4-cis
-                    kind: Profile
-                    apiGroup: compliance.openshift.io/v1alpha1
-                settingsRef:
-                  name: default
-                  kind: ScanSetting
-                  apiGroup: compliance.openshift.io/v1alpha1
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
