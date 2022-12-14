@@ -8,4 +8,4 @@ bases:
 images:
   - name: contoso
     newName: image-registry.openshift-image-registry.svc:5000/cicd/contoso
-    newTag: latest
+    newTag: dev
