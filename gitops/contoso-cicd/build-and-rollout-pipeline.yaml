@@ -43,7 +43,7 @@ spec:
         - git-clone
       taskRef:
         kind: ClusterTask
-        name: s2i-dotnet
+        name: s2i-dotnet-chains
       workspaces:
         - name: source
           workspace: workspace
@@ -112,7 +112,7 @@ spec:
           value: >-
             docker://image-registry.openshift-image-registry.svc:5000/cicd/contoso@$(tasks.s2i-dotnet.results.IMAGE_DIGEST)
         - name: destImageURL
-          value: 'docker://image-registry.openshift-image-registry.svc:5000/cicd/contoso:test'
+          value: 'docker://quay.io/pittar/contoso:test'
         - name: srcTLSverify
           value: 'true'
         - name: destTLSverify
