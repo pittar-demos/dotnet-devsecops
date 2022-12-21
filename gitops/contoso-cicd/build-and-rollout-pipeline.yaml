@@ -43,7 +43,7 @@ spec:
         - git-clone
       taskRef:
         kind: ClusterTask
-        name: s2i-dotnet-chains
+        name: s2i-dotnet
       workspaces:
         - name: source
           workspace: workspace
@@ -88,7 +88,7 @@ spec:
         - acs-image-check
       taskRef:
         kind: ClusterTask
-        name: skopeo-copy
+        name: skopeo-copy-chains
       workspaces:
         - name: images-url
           workspace: workspace
@@ -121,7 +121,7 @@ spec:
         - rollout-dev
       taskRef:
         kind: ClusterTask
-        name: skopeo-copy
+        name: skopeo-copy-chains
       workspaces:
         - name: images-url
           workspace: workspace
