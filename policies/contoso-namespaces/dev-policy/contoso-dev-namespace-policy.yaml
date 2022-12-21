@@ -34,7 +34,7 @@ spec:
         apiVersion: policy.open-cluster-management.io/v1
         kind: ConfigurationPolicy
         metadata:
-          name: pipeline-admin-rbac
+          name: contoso-dev-pipeline-admin-rbac
         spec:
           remediationAction: inform
           severity: high
@@ -52,7 +52,7 @@ spec:
                   name: admin
                 subjects:
                   - kind: ServiceAccount
-                    name: cicd
+                    name: pipeline
                     namespace: cicd
 ---
 apiVersion: policy.open-cluster-management.io/v1
