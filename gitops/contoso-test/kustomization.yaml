@@ -1,7 +1,6 @@
 namespace: contoso-test
 
 bases:
-  - ../base/rbac/contoso-cicd-pipelines
   - ../base/app
   - ../base/database
 
