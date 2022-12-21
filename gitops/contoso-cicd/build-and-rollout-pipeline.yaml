@@ -79,7 +79,7 @@ spec:
           value: >-
             docker://image-registry.openshift-image-registry.svc:5000/cicd/contoso@$(tasks.s2i-dotnet.results.IMAGE_DIGEST)
         - name: destImageURL
-          value: 'docker://quay.io/pittar/contoso:dev'
+          value: 'docker://image-registry.openshift-image-registry.svc:5000/cicd/contoso:dev'
         - name: srcTLSverify
           value: 'true'
         - name: destTLSverify
@@ -88,7 +88,7 @@ spec:
         - acs-image-check
       taskRef:
         kind: ClusterTask
-        name: skopeo-copy-chains
+        name: skopeo-copy
       workspaces:
         - name: images-url
           workspace: workspace
@@ -112,7 +112,7 @@ spec:
           value: >-
             docker://image-registry.openshift-image-registry.svc:5000/cicd/contoso@$(tasks.s2i-dotnet.results.IMAGE_DIGEST)
         - name: destImageURL
-          value: 'docker://quay.io/pittar/contoso:test'
+          value: 'docker://image-registry.openshift-image-registry.svc:5000/cicd/contoso:test'
         - name: srcTLSverify
           value: 'true'
         - name: destTLSverify
@@ -121,7 +121,7 @@ spec:
         - rollout-dev
       taskRef:
         kind: ClusterTask
-        name: skopeo-copy-chains
+        name: skopeo-copy
       workspaces:
         - name: images-url
           workspace: workspace
